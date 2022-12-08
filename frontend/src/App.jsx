@@ -1,10 +1,15 @@
-import { Routers } from './Routes';
+import Router from "./router";
+import { Provider } from "react-redux";
+import store from '@/app/store';
 
 const App = () => {
     return (
-        <div className="page-container">
-            <Routers />
-        </div>
+        <Provider store={store}>
+            <div className="page-container">
+                <Router />
+            </div>
+        </Provider>
     );
-}
+};
+
 export default App;
