@@ -5,7 +5,9 @@ import ability from "@/app/ability";
 import { fetchUserData } from "@/app/slices/authSlice";
 const PrivateRoute = ({ routes }) => {
     const dispatch = useDispatch();
-    const { isAuthenticated, loading } = useSelector((state) => state.auth);
+    const { isAuthenticated, loading, userData } = useSelector(
+        (state) => state.auth
+    );
 
     useEffect(() => {
         dispatch(fetchUserData());

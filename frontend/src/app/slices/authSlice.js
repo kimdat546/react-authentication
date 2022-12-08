@@ -12,14 +12,31 @@ const removeToken = () => {
 
 export const fetchUserData = createAsyncThunk(
 	'auth/fetchUserData',
-	async (_, { rejectWithValue }) => {
+	async (_, { dispatch, rejectWithValue }) => {
 		try {
-			const accessToken = localStorage.getItem(ACCESS_TOKEN);
-			const { data } = await api.get(`${apiUrl}/auth`);
-			return { ...data, accessToken };
+			const response = await api.get(`${apiUrl}/auth`);
+			console.log(response, 'response');
+			dispatch(pushUserData(response.user));
+			return response;
 		} catch (e) {
 			localStorage.removeItem(ACCESS_TOKEN);
 			return rejectWithValue('');
+		}
+	},
+);
+
+export const register = createAsyncThunk(
+	'auth/register',
+	async (payload, { dispatch, rejectWithValue }) => {
+		try {
+			const response = await api.post(`${apiUrl}/auth/register`, payload);
+			localStorage.setItem(ACCESS_TOKEN, response.accessToken);
+			// localStorage.setItem(REFRESH_TOKEN, data.refresh_token);
+			dispatch(isAuthenticated(response.accessToken));
+			return response;
+		} catch (errors) {
+			removeToken();
+			return rejectWithValue(errors?.response?.data);
 		}
 	},
 );
@@ -40,9 +57,11 @@ export const login = createAsyncThunk(
 	},
 );
 
-export const logout = createAsyncThunk('auth/logout', async () => {
-	await api.post(`${apiUrl}/auth/logout`);
+export const logout = createAsyncThunk('auth/logout', (_, { dispatch }) => {
+	console.log("logout");
+	dispatch(resetValues());
 	localStorage.removeItem(ACCESS_TOKEN);
+
 });
 
 export const refreshToken = createAsyncThunk(
@@ -88,10 +107,15 @@ export const authSlice = createSlice({
 	initialState,
 	reducers: {
 		pushUserData: (state, action) => {
-			state.usersData = action.payload;
+			console.log(action.payload, 'action.payload');
+			state.userData = action.payload;
 		},
 		isAuthenticated: (state, action) => {
 			state.isAuthenticated = action.payload;
+		},
+		resetValues: state => {
+			state.userData = {};
+			state.isAuthenticated = null;
 		}
 	},
 	extraReducers: {
@@ -104,7 +128,6 @@ export const authSlice = createSlice({
 	}
 });
 
-
-export const { pushUserData, isAuthenticated } = authSlice.actions;
+export const { pushUserData, isAuthenticated, resetValues } = authSlice.actions;
 
 export default authSlice.reducer;

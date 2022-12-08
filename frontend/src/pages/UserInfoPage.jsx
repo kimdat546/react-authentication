@@ -1,19 +1,17 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { logout } from "@/app/slices/authSlice";
 
 const UserInfoPage = () => {
-    // We'll use the history to navigate the user
-    // programmatically later on (we're not using it yet)
-    const history = useNavigate();
-
-    // These states are bound to the values of the text inputs
-    // on the page (see JSX below).
+    const dispatch = useDispatch();
     const [favoriteFood, setFavoriteFood] = useState("");
     const [hairColor, setHairColor] = useState("");
     const [bio, setBio] = useState("");
 
     const [showSuccessMessage, setShowSuccessMessage] = useState(false);
     const [showErrorMessage, setShowErrorMessage] = useState(false);
+
+    const { loading, userData } = useSelector((state) => state.auth);
 
     useEffect(() => {
         if (showSuccessMessage || showErrorMessage) {
@@ -28,8 +26,8 @@ const UserInfoPage = () => {
         alert("Save functionality not implemented yet");
     };
 
-    const logOut = () => {
-        alert("Log out functionality not implemented yet");
+    const handleLogout = async () => {
+        await dispatch(logout());
     };
 
     const resetValues = () => {
@@ -38,7 +36,7 @@ const UserInfoPage = () => {
 
     return (
         <div className="content-container">
-            <h1>Info for ______</h1>
+            <h1>Info for {userData.username || "______"}</h1>
             {showSuccessMessage && (
                 <div className="success">Successfully saved user data!</div>
             )}
@@ -68,7 +66,9 @@ const UserInfoPage = () => {
             <hr />
             <button onClick={saveChanges}>Save Changes</button>
             <button onClick={resetValues}>Reset Values</button>
-            <button onClick={logOut}>Log Out</button>
+            <button type="button" onClick={handleLogout}>
+                Log Out
+            </button>
         </div>
     );
 };
