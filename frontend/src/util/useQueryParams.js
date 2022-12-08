@@ -1,10 +1,3 @@
-/*
-    This is just a nice custom hook that we can
-    use to get all the query parameters from inside
-    our components. Don't worry about the details
-    unless you're curious :)
-*/
-
 import { useLocation } from 'react-router-dom';
 
 const pairs = arr => arr.reduce((acc, x, i) => {
